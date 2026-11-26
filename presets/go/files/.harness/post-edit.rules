@@ -1,0 +1,3 @@
+# Fast per-file checks after an edit (.claude/hooks/posttooluse-checks.sh).
+# Format: <globs>|<cwd>|<command>. Only installed tools run.
+*.go|.|gofmt -w {file}

@@ -1,0 +1,8 @@
+# Architecture boundaries (scripts/check-architecture.sh).
+# Format: <name>|<paths>|<extended regex>|<message>
+# A match of the regex in any of the (space-separated) paths is a violation.
+# The message is everything after the last `|`, so it must not contain one.
+#
+# Examples:
+# raw database client|src|new[[:space:]]+Pool[[:space:]]*\(|Use the repository layer, not a hand-built client.
+# env outside config|src/api src/domain|process\.env|Read configuration in src/config and inject it.

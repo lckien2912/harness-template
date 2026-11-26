@@ -1,0 +1,20 @@
+# Cases for guard.python.rules: <expect>|<tool>|<command or path>
+ask|Bash|uv add httpx
+ask|Bash|poetry add --group dev pytest
+ask|Bash|pip install requests
+ask|Bash|uv pip install -r requirements.txt
+allow|Bash|uv sync --frozen
+allow|Bash|uv run pytest -q
+allow|Bash|pip list
+block|Bash|python manage.py flush --noinput
+ask|Bash|uv run python manage.py migrate
+ask|Bash|python manage.py makemigrations orders
+allow|Bash|python manage.py runserver
+block|Bash|uv run alembic downgrade base
+ask|Bash|alembic upgrade head
+ask|Bash|alembic revision --autogenerate -m "add orders"
+allow|Bash|alembic history
+block|Edit|uv.lock
+ask|Edit|orders/migrations/0002_order_status.py
+ask|Write|alembic/versions/1a2b_add_orders.py
+allow|Edit|orders/models.py

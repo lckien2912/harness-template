@@ -1,0 +1,5 @@
+# Fast per-file checks after an edit (.claude/hooks/posttooluse-checks.sh).
+# Format: <globs>|<cwd>|<command>. Only installed tools run (.venv/bin, then
+# PATH); nothing is downloaded.
+*.py|.|ruff check --fix --quiet {file}
+*.py|.|ruff format --quiet {file}

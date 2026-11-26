@@ -1,0 +1,12 @@
+# Content-check cases (scripts/test-guardrails.sh): each writes one file into a
+# fresh tree and runs one check. <pass|fail>|<check>|<path>|<content>
+# check = start-boundaries (.harness/checks/start-boundaries.mjs) or arch
+# (architecture.rules). Add a case per app/dir when the layout grows.
+fail|start-boundaries|src/routes/index.tsx|const key = process.env.API_KEY
+fail|start-boundaries|src/features/orders/list.tsx|const key = process.env.API_KEY
+pass|start-boundaries|src/server/env.ts|export const key = process.env.API_KEY
+pass|start-boundaries|src/routes/data.server.ts|export const key = process.env.API_KEY
+pass|start-boundaries|src/features/orders/server.ts|export const key = process.env.API_KEY
+pass|start-boundaries|src/routes/index.test.tsx|const key = process.env.API_KEY
+fail|arch|src/env.ts|export const k = import.meta.env.VITE_STRIPE_SECRET
+pass|arch|src/env.ts|export const k = import.meta.env.VITE_PUBLIC_URL

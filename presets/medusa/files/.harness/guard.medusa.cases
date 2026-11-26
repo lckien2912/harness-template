@@ -1,0 +1,14 @@
+# Cases for guard.medusa.rules: <expect>|<tool>|<command or path>
+block|Bash|cd apps/backend && bunx medusa db:reset
+block|Bash|bun x medusa db:reset
+ask|Bash|bunx medusa db:migrate
+ask|Bash|cd apps/backend && bun run medusa db:generate lot
+ask|Bash|pnpm exec medusa db:rollback
+ask|Bash|bunx @mercurjs/cli add vendor-chat
+ask|Bash|bunx @mercurjs/cli@2.3.7 add reviews
+ask|Bash|mercurjs add vendor-chat
+allow|Bash|bun run build
+allow|Bash|cd apps/backend && bunx medusa develop
+ask|Edit|apps/backend/src/modules/lot/migrations/Migration20260101.ts
+ask|Write|apps/backend/medusa-config.ts
+allow|Edit|apps/backend/src/modules/lot/service.ts

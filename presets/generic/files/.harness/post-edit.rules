@@ -1,0 +1,8 @@
+# Fast per-file checks after an edit (.claude/hooks/posttooluse-checks.sh).
+# Format: <globs>|<cwd>|<command>   ({file} = edited file; cwd `.` or `{pkgdir}`)
+# Only already-installed tools run; a missing tool is skipped.
+#
+# Examples:
+# *.ts *.tsx|{pkgdir}|eslint --fix {file}
+# *.py|.|ruff check --fix {file}
+# *.go|.|gofmt -w {file}

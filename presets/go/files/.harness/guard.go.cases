@@ -1,0 +1,13 @@
+# Cases for guard.go.rules: <expect>|<tool>|<command or path>
+ask|Bash|go get github.com/jackc/pgx/v5
+allow|Bash|go mod tidy
+allow|Bash|go test ./...
+block|Bash|migrate -path db/migrations -database "$DATABASE_URL" drop -f
+block|Bash|goose -dir migrations postgres "$DSN" reset
+ask|Bash|migrate -path db/migrations -database "$DATABASE_URL" up
+ask|Bash|goose -dir migrations postgres "$DSN" up
+ask|Bash|atlas migrate apply --env local
+allow|Bash|goose create add_orders sql
+block|Edit|go.sum
+ask|Write|db/migrations/000002_orders.up.sql
+allow|Edit|internal/orders/service.go

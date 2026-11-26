@@ -1,0 +1,10 @@
+# Go preset guard rules. Format: kind|name|regex.
+
+# Adding a module dependency is a Protected Decision.
+ask|go get|(^|[;&|[:space:]])go[[:space:]]+get[[:space:]]
+# golang-migrate, goose, atlas.
+block|migrate drop / goose reset|(^|[;&|[:space:]])(migrate[[:space:]]+[^;&|]*[[:space:]]drop|goose[[:space:]]+[^;&|]*[[:space:]]reset)([[:space:]]|$)
+ask|database migration|(^|[;&|[:space:]])(migrate[[:space:]]+[^;&|]*[[:space:]](up|down|force|goto)|goose[[:space:]]+[^;&|]*[[:space:]](up|down|redo|up-to|down-to)|atlas[[:space:]]+(migrate[[:space:]]+apply|schema[[:space:]]+apply))([[:space:]]|$)
+
+block-path|go.sum|(^|/)go\.sum$
+ask-path|migrations|(^|/)(db/)?migrations/

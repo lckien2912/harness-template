@@ -1,0 +1,19 @@
+# NestJS guard rules (on top of guard.node.rules). Format: kind|name|regex.
+
+# `nest add` installs a package AND runs its schematic over the code (module
+# imports, main.ts, config): a dependency plus a code change in one step.
+ask|nest add|(^|[;&|[:space:]/])(nest|@nestjs/cli(@[^[:space:]]*)?)[[:space:]]+add[[:space:]]
+# `nest new` scaffolds a whole project (git init, install) inside this one.
+ask|nest new|(^|[;&|[:space:]/])(nest|@nestjs/cli(@[^[:space:]]*)?)[[:space:]]+(new|n)[[:space:]]
+
+# MikroORM: schema wipes are blocked, migrations and schema updates ask.
+block|mikro-orm schema drop / fresh|mikro-orm(-esm)?[^;&|]*[[:space:]](schema:(drop|fresh)|migration:fresh)
+ask|mikro-orm migration / schema update|mikro-orm(-esm)?[^;&|]*[[:space:]](migration:(up|down|create)|schema:(create|update))
+# TypeORM schema sync rewrites the schema from the entities, dropping columns.
+ask|typeorm schema:sync|typeorm[^;&|]*schema:sync
+
+# Global bootstrap (pipes, filters, CORS, helmet, prefix), the build setup and
+# the ORM configuration need a human.
+ask-path|bootstrap (main.ts)|(^|/)src/main\.ts$
+ask-path|nest-cli.json|(^|/)nest-cli\.json$
+ask-path|ORM configuration|(^|/)(data-source|ormconfig|typeorm\.config|mikro-orm\.config)\.(ts|js|json)$

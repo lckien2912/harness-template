@@ -1,0 +1,9 @@
+# Architecture boundaries (scripts/check-architecture.sh); rules that depend
+# on the file's role (client-reachable vs server-only) live in
+# .harness/checks/start-boundaries.mjs.
+# Format: <name>|<paths>|<extended regex>|<message>
+# A missing path is skipped.
+
+# VITE_* variables are inlined into the client bundle: never a secret.
+secret in client env|src app .env.example|VITE_[A-Z0-9_]*(SECRET|PRIVATE|PASSWORD|TOKEN|API_KEY|SERVICE_ROLE)|Only public values get the VITE_ prefix; read secrets on the server (src/server/) through a server function.
+debugger statement|src app|^[[:space:]]*debugger;?[[:space:]]*$|Remove debugger statements.

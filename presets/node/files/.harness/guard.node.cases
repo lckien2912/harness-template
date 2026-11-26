@@ -1,0 +1,26 @@
+# Cases for guard.node.rules: <expect>|<tool>|<command or path>
+ask|Bash|bun add zod
+ask|Bash|cd apps/web && pnpm add -D vitest
+ask|Bash|yarn add react
+ask|Bash|npm install lodash
+ask|Bash|npm i -D typescript
+allow|Bash|npm install
+allow|Bash|npm install && npm test
+allow|Bash|npm ci
+allow|Bash|pnpm install --frozen-lockfile
+allow|Bash|bun install
+block|Bash|npx prisma migrate reset --force
+block|Bash|bunx prisma db push --accept-data-loss
+ask|Bash|npx prisma migrate dev --name init
+ask|Bash|pnpm prisma db push
+allow|Bash|npx prisma generate
+block|Bash|npx drizzle-kit drop
+ask|Bash|bunx drizzle-kit push
+block|Bash|npx typeorm schema:drop -d src/data-source.ts
+ask|Bash|npm run typeorm migration:run
+ask|Bash|npx knex migrate:latest
+block|Edit|package-lock.json
+block|Write|apps/web/pnpm-lock.yaml
+ask|Edit|prisma/migrations/20260101_init/migration.sql
+allow|Edit|prisma/schema.prisma
+allow|Edit|src/lib/migrations.ts

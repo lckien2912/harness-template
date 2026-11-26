@@ -1,0 +1,2 @@
+- Adding a module with `go get`, or raising the `go` directive.
+- Loosening the golangci-lint configuration.

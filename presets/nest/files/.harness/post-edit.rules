@@ -1,0 +1,10 @@
+# Fast per-file checks after an edit (.claude/hooks/posttooluse-checks.sh).
+# Format: <globs>|<cwd>|<command>   ({file} = edited file; cwd `.` or `{pkgdir}`)
+# Only already-installed tools run (node_modules/.bin, then PATH); nothing is
+# downloaded, so only the linter the project installed runs. Nest 12 scaffolds
+# Prettier + oxlint; older apps use ESLint (with the prettier plugin). Format
+# first, then lint with fixes; type-aware lint (slower) runs in the `lint`
+# gate. Delete the lines of the tools the project does not use.
+*.ts *.mts *.cts *.js *.mjs *.cjs|{pkgdir}|prettier --write --log-level warn {file}
+*.ts *.mts *.cts *.js *.mjs *.cjs|{pkgdir}|oxlint --fix {file}
+*.ts *.mts *.cts *.js *.mjs *.cjs|{pkgdir}|eslint --fix --no-warn-ignored {file}

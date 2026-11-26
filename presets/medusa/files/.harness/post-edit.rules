@@ -1,0 +1,4 @@
+# After an edit to backend TypeScript, run the installed eslint --fix from the
+# backend package (@medusajs/eslint-plugin encodes route/workflow/module shapes).
+# Format: <globs>|<cwd>|<command>
+apps/backend/src/*.ts|apps/backend|eslint --fix --no-warn-ignored {file}

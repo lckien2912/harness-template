@@ -1,0 +1,7 @@
+# Architecture boundaries a linter will not catch (scripts/check-architecture.sh).
+# Format: <name>|<paths>|<extended regex>|<message>
+
+raw database client|apps/backend/src|new[[:space:]]+Pool[[:space:]]*\(|new[[:space:]]+Client[[:space:]]*\(|from[[:space:]]+['"]pg['"]|require\([[:space:]]*['"]pg['"]|Use a module service or Medusa query instead of a hand-built pg client.
+env in API layer|apps/backend/src/api|process\.env|Load config in medusa-config.ts and inject it through module options or the container.
+env in workflows|apps/backend/src/workflows|process\.env|Load config in medusa-config.ts and inject it through module options or the container.
+mercur internals|apps/backend/src|@mercurjs/core/\.medusa|Use Mercur's public entry points (@mercurjs/core, @mercurjs/core/workflows, @mercurjs/types).

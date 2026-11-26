@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Pre-push gates (optional): the same `RUN_INTEGRATION=1 bash init.sh` that CI
+# runs, before anything reaches the remote. Useful when CI is slow, paid or
+# paused; with CI on, it catches a red build before the pull request does.
+#
+# Turn it on once per clone:  git config core.hooksPath .githooks
+# (or from package.json: "prepare": "git config core.hooksPath .githooks").
+# Run it ahead of a push:     bash .githooks/pre-push
+# Emergency only:             git push --no-verify, and say so in the pull request.
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+zero=0000000000000000000000000000000000000000
+head_sha="$(git rev-parse HEAD)"
+branches=0
+# Run by hand (no arguments; git passes the remote's name and URL): test HEAD.
+[[ $# -eq 0 ]] && exec < <(echo "refs/heads/manual $head_sha - -")
+while read -r local_ref local_sha _remote_ref _remote_sha; do
+  # Deleting a remote branch, or pushing a tag: nothing to test.
+  [[ "$local_sha" == "$zero" ]] && continue
+  [[ "$local_ref" == refs/heads/* ]] || continue
+  branches=1
+  if [[ "$local_sha" != "$head_sha" ]]; then
+    echo "pre-push: ${local_ref#refs/heads/} is not the checked-out commit; the gates test the worktree." >&2
+    echo "pre-push: check it out (or open its worktree) and push from there." >&2
+    exit 1
+  fi
+done
+[[ $branches -eq 1 ]] || exit 0
+
+if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+  echo "pre-push: uncommitted changes would be tested instead of the pushed commit." >&2
+  echo "pre-push: commit them (or set them aside) and push again." >&2
+  exit 1
+fi
+
+# The commit whose gates passed, per worktree: pushing it again skips the run.
+# A remote may drop the connection git opened before this hook when the gates
+# take several minutes; the push then fails after they pass, and the retry is
+# instant.
+stamp="$(git rev-parse --git-path harness-gates-passed)"
+if [[ -f "$stamp" && "$(cat "$stamp")" == "$head_sha" ]]; then
+  echo "pre-push: gates already passed for ${head_sha:0:7}"
+  exit 0
+fi
+
+# CI=true as CI sets it: a hook has no TTY, so installers must not prompt.
+echo "pre-push: CI=true RUN_INTEGRATION=1 bash init.sh (git push --no-verify skips, emergency only)"
+CI=true RUN_INTEGRATION=1 bash init.sh
+echo "$head_sha" > "$stamp"
+echo "pre-push: gates passed for ${head_sha:0:7}; if the push now fails (connection closed), push again"

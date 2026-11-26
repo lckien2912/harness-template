@@ -1,0 +1,15 @@
+# Cases for guard.tanstack-start.rules: <expect>|<tool>|<command or path>
+ask|Bash|pnpm dlx shadcn@latest add button
+ask|Bash|npx shadcn add dialog
+allow|Bash|pnpm run dev -- --port 3001
+allow|Bash|pnpm vite build && pnpm vitest run
+block|Edit|src/routeTree.gen.ts
+block|Write|apps/web/src/routeTree.gen.ts
+ask|Edit|vite.config.ts
+ask|Edit|app.config.ts
+ask|Edit|src/start.ts
+ask|Edit|src/server.ts
+allow|Edit|src/router.tsx
+allow|Edit|src/routes/__root.tsx
+allow|Edit|src/routes/posts/$postId.tsx
+allow|Edit|src/server/posts.functions.ts

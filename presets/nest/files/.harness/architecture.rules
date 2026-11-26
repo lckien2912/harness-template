@@ -1,0 +1,11 @@
+# Architecture boundaries (scripts/check-architecture.sh); rules that depend
+# on the file's role (controller, config) live in .harness/checks/nest-layers.mjs.
+# Format: <name>|<paths>|<extended regex>|<message>
+# `src` for a standalone app, `apps libs` for a Nest CLI monorepo; a missing
+# path is skipped.
+
+# Schema changes go through migrations, never the ORM's auto-sync.
+orm auto-sync|src apps libs|synchronize[[:space:]]*:[[:space:]]*true|Schema changes go through migrations; synchronize: true can drop columns on a shared database.
+# Nest's Logger carries the context and honours the log level.
+console logging|src apps libs|console\.(log|debug|info)[[:space:]]*\(|Use Logger from @nestjs/common (or the app's logger provider).
+debugger statement|src apps libs|^[[:space:]]*debugger;?[[:space:]]*$|Remove debugger statements.

@@ -1,0 +1,7 @@
+# Architecture boundaries (scripts/check-architecture.sh).
+# Format: <name>|<paths>|<extended regex>|<message>
+# Adjust the paths to the project layout; a missing path is skipped.
+
+env outside config|internal/handler internal/http internal/service internal/domain|os\.Getenv|os\.LookupEnv|Read configuration in internal/config and inject it.
+sql driver in handlers|internal/handler internal/http|"database/sql"|"github\.com/jackc/pgx|Go through the repository/store layer.
+domain imports transport|internal/domain|"net/http"|The domain layer must not depend on HTTP.

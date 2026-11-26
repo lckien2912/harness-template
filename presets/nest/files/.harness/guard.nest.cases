@@ -1,0 +1,28 @@
+# Cases for guard.nest.rules: <expect>|<tool>|<command or path>
+ask|Bash|npx nest add @nestjs/swagger
+ask|Bash|pnpm nest add nestjs-pino
+ask|Bash|npx @nestjs/cli@11 add @nestjs/graphql
+ask|Bash|node_modules/.bin/nest add @nestjs/config
+ask|Bash|npx @nestjs/cli new api --skip-git
+allow|Bash|npx nest g resource users --dry-run
+allow|Bash|nest generate module orders
+allow|Bash|pnpm nest build
+allow|Bash|cd apps/api && npm run start:dev
+allow|Bash|npx nest info && pnpm test
+block|Bash|npx mikro-orm schema:drop --run
+block|Bash|pnpm mikro-orm-esm schema:fresh --run --seed
+block|Bash|npx mikro-orm migration:fresh
+ask|Bash|npx mikro-orm migration:create
+ask|Bash|yarn mikro-orm migration:up
+ask|Bash|npx mikro-orm schema:update --run
+allow|Bash|npx mikro-orm debug
+ask|Bash|npx typeorm-ts-node-commonjs schema:sync -d src/data-source.ts
+allow|Bash|npx typeorm-ts-node-commonjs migration:show -d src/data-source.ts
+ask|Edit|src/main.ts
+ask|Edit|apps/api/src/main.ts
+ask|Write|nest-cli.json
+ask|Edit|src/data-source.ts
+ask|Edit|mikro-orm.config.ts
+allow|Edit|src/app.module.ts
+allow|Edit|src/users/users.service.ts
+allow|Edit|src/users/main.ts.md

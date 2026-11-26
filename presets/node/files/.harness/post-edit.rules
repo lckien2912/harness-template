@@ -1,0 +1,5 @@
+# Fast per-file checks after an edit (.claude/hooks/posttooluse-checks.sh).
+# Format: <globs>|<cwd>|<command>   ({file} = edited file; cwd `.` or `{pkgdir}`)
+# Only already-installed tools run (node_modules/.bin, then PATH); nothing is
+# downloaded. eslint runs from the owning package so its flat config applies.
+*.ts *.tsx *.mts *.cts *.js *.jsx *.mjs *.cjs *.vue *.svelte|{pkgdir}|eslint --fix --no-warn-ignored {file}

@@ -1,0 +1,2 @@
+# Cases for guard.project.rules: <expect>|<tool>|<command or path>
+# expect = block | ask | allow; tool = Bash | Edit | Write

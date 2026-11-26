@@ -1,0 +1,2 @@
+- Changing the production settings module or the migration history.
+- Loosening ruff or mypy configuration (`ignore`, `exclude`, `strict = false`).

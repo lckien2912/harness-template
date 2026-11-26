@@ -1,0 +1,6 @@
+{
+  "$schema": "./feature_list.schema.json",
+  "milestone": "{{MILESTONE}}",
+  "updatedAt": null,
+  "features": []
+}

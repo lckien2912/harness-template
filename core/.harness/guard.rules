@@ -1,0 +1,42 @@
+# Core guard rules: framework-agnostic, shipped with every preset.
+# Format and semantics: .claude/hooks/pretooluse-guard.sh. Test cases live in
+# guard.cases; add project rules in guard.<name>.rules rather than here, so a
+# template upgrade can replace this file.
+#
+# kind|name|extended regex (case-insensitive; a kind ending in `:cs`, such as
+# `ask:cs`, matches case-sensitively)
+
+# `rm` with BOTH a recursive and a force flag (combined -rf/-fr, split -r ... -f,
+# or long --recursive ... --force, either order). Anchored to a real `rm` word so
+# `charm -rf` or a path containing "rm" does not trip it; `[^;&|]*` keeps the
+# match inside one command segment.
+block|rm recursive+force|(^|[^[:alnum:]/._-])rm[[:space:]]+[^;&|]*(-[[:alnum:]]*r[[:alnum:]]*f|-[[:alnum:]]*f[[:alnum:]]*r|(-[[:alnum:]]*r|--recursive)[^;&|]*(-[[:alnum:]]*f|--force)|(-[[:alnum:]]*f|--force)[^;&|]*(-[[:alnum:]]*r|--recursive))
+
+# DROP/TRUNCATE only when a database execution vector sits in the same command
+# (a client binary or --command/--execute), so `grep "drop table"` or
+# `cat truncate.ts` are not blocked.
+block|destructive SQL (DROP/TRUNCATE via DB client)|((drop[[:space:]]+(table|database|schema)|truncate[[:space:]]+(table[[:space:]]+)?["a-z_])[^;&]*(psql|mysql|mariadb|sqlite3|cockroach|mongosh|pg_dump|pg_restore|--command|--execute)|(psql|mysql|mariadb|sqlite3|cockroach|mongosh|pg_dump|pg_restore|--command|--execute)[^;&]*(drop[[:space:]]+(table|database|schema)|truncate[[:space:]]+(table[[:space:]]+)?["a-z_]))
+
+# Git history protection. Edit the branch list to match the project.
+# `git` may carry global options before the subcommand (`git -C <repo> push`,
+# `git --no-pager …`), the usual form from a workspace root above the repo.
+block|git push --force|git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+push([[:space:]]+[^&|;]*)?[[:space:]]+(--force(-with-lease)?([[:space:]]|=|$)|-f([[:space:]]|$))
+# A refspec (`HEAD:main`, `dev:refs/heads/main`) is caught by its destination,
+# and so is a forced one (`+main`, `+HEAD:main`). Add a production branch here
+# (e.g. `|prod`) when the project has one; keep settings.json in step.
+block|git push protected branch|git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+push[[:space:]]+[^&|;]*origin[[:space:]]+([+]?[^[:space:]&|;:]*:)?[+]?(refs/heads/)?(main|master|production)([[:space:]]|$|:)
+
+# Local data loss through Docker volumes.
+block|docker compose down -v|docker([[:space:]]+compose|-compose)[[:space:]]+[^;&|]*down[^;&|]*[[:space:]](-v|--volumes)([[:space:]]|$)
+block|docker volume rm|docker[[:space:]]+volume[[:space:]]+(rm|prune)
+block|docker system prune --volumes|docker[[:space:]]+system[[:space:]]+prune[^;&|]*--volumes
+
+# Destructive but sometimes legitimate git operations: ask.
+ask|git reset --hard|git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+reset[[:space:]]+[^;&|]*--hard
+ask|git clean -f|git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+clean[[:space:]]+[^;&|]*(-[[:alnum:]]*f|--force)
+ask:cs|git branch -D|git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+branch[[:space:]]+[^;&|]*-D([[:space:]]|$)
+ask|dropdb|(^|[;&|[:space:]])dropdb([[:space:]]|$)
+
+# Secrets on disk: never written by the agent (reads are denied in settings.json).
+block-path|env file|(^|/)\.env($|\.(local|dev|development|prod|production|test|staging)(\.local)?$)
+block-path|private key|\.(pem|key)$|(^|/)id_(rsa|ed25519|ecdsa)

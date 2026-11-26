@@ -1,0 +1,7 @@
+# Architecture boundaries (scripts/check-architecture.sh).
+# Format: <name>|<paths>|<extended regex>|<message>
+# Adjust the paths to the project layout; a missing path is skipped.
+
+env outside settings|app/api app/routers app/views app/services src/api src/services|os\.environ|os\.getenv|Read configuration in the settings module and inject it.
+raw SQL driver in handlers|app/api app/routers app/views src/api|import[[:space:]]+(psycopg2?|pymysql|sqlite3)|from[[:space:]]+(psycopg2?|pymysql|sqlite3)[[:space:]]+import|Go through the ORM/repository layer.
+breakpoint left in code|app src|^[[:space:]]*(breakpoint\(\)|import[[:space:]]+pdb|pdb\.set_trace\(\))|Remove debugger calls.

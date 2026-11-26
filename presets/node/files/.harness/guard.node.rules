@@ -1,0 +1,20 @@
+# Node preset guard rules. Format: kind|name|regex (see pretooluse-guard.sh).
+
+# Adding a dependency is a Protected Decision (production deps especially).
+ask|package add|(^|[;&|[:space:]])(bun|pnpm|yarn)[[:space:]]+add[[:space:]]
+ask|npm install <pkg>|(^|[;&|[:space:]])npm[[:space:]]+(install|i|add)[[:space:]]+([^-[:space:];&|]|-[^-[:space:]]*[[:space:]]+[^-[:space:];&|])
+
+# Prisma: destructive resets are blocked, migrations need approval.
+block|prisma migrate reset|prisma[[:space:]]+migrate[[:space:]]+reset
+block|prisma db push --force-reset / --accept-data-loss|prisma[[:space:]]+db[[:space:]]+push[^;&|]*(--force-reset|--accept-data-loss)
+ask|prisma migrate / db push|prisma[[:space:]]+(migrate[[:space:]]+(dev|deploy|resolve)|db[[:space:]]+push)
+# Drizzle, TypeORM, Knex, Sequelize migrations.
+block|drizzle-kit drop|drizzle-kit[[:space:]]+drop
+ask|drizzle-kit push / migrate|drizzle-kit[[:space:]]+(push|migrate)
+block|typeorm schema:drop|typeorm[^;&|]*schema:drop
+ask|typeorm migration|typeorm[^;&|]*migration:(run|revert)
+ask|knex / sequelize migrate|(knex[[:space:]]+migrate:(latest|rollback|up|down)|sequelize(-cli)?[[:space:]]+db:migrate)
+
+# Hand-editing lockfiles or generated migrations.
+block-path|lockfile|(^|/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?)$
+ask-path|migrations|(^|/)(prisma/)?migrations/|(^|/)drizzle/[0-9]

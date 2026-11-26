@@ -1,0 +1,7 @@
+# Fast per-file checks after an edit (.claude/hooks/posttooluse-checks.sh).
+# Format: <globs>|<cwd>|<command>   ({file} = edited file; cwd `.` or `{pkgdir}`)
+# Only already-installed tools run (node_modules/.bin, then PATH); nothing is
+# downloaded, so only the linter the project installed (ESLint or Biome) runs.
+# Delete the line of the one the project does not use.
+*.ts *.tsx *.mts *.cts *.js *.jsx *.mjs *.cjs|{pkgdir}|eslint --fix --no-warn-ignored {file}
+*.ts *.tsx *.mts *.cts *.js *.jsx *.mjs *.cjs *.json *.css|{pkgdir}|biome check --write --no-errors-on-unmatched {file}

@@ -1,0 +1,52 @@
+# Trial inputs for the PreToolUse guard; scripts/test-guardrails.sh runs every
+# .harness/guard*.cases file. One case per line:
+#
+#   <expect>|<tool>|<command or file path>
+#
+#   expect = block | ask | allow
+#   tool   = Bash | Edit | Write
+#
+# Every rule in guard.rules should have at least one `block`/`ask` case and,
+# where a false positive is likely, an `allow` case next to it.
+
+block|Bash|rm -rf build
+block|Bash|cd app && rm -r -f tmp
+block|Bash|rm --force --recursive cache
+allow|Bash|rm -f stale.log
+allow|Bash|charm -rf
+block|Bash|psql -c "DROP TABLE users"
+block|Bash|mysql --execute "truncate table orders"
+allow|Bash|grep -rn "drop table" docs
+allow|Bash|cat src/truncate.ts
+block|Bash|git push --force origin feat/x
+block|Bash|git push -f
+block|Bash|git push --force-with-lease
+block|Bash|git push origin main
+block|Bash|git push origin +main
+block|Bash|git push origin HEAD:main
+block|Bash|git push origin feat/x:refs/heads/production
+block|Bash|git -C my-repo push -u origin +HEAD:master
+block|Bash|git -C my-repo push --force origin feat/x
+allow|Bash|git push origin main-notes
+allow|Bash|git push origin feat/p1.2-main
+allow|Bash|git -C my-repo push -u origin feat/p1.2-login
+allow|Bash|git push origin feat/p1.2-login
+allow|Bash|git push -u origin phase/p1-foundation
+block|Bash|docker compose down -v
+block|Bash|docker-compose -f docker-compose.yml down --volumes
+block|Bash|docker volume rm app_data
+allow|Bash|docker compose down
+ask|Bash|git reset --hard HEAD~1
+ask|Bash|git clean -fdx
+ask|Bash|git branch -D feat/x
+allow|Bash|git branch -d feat/x
+ask|Bash|git -C my-repo reset --hard HEAD~1
+ask|Bash|git --no-pager clean -fd
+ask|Bash|dropdb app_dev
+allow|Bash|grep -n dropdbx file
+allow|Bash|git commit -m "add lockfile"
+block|Write|.env
+block|Edit|apps/api/.env.local
+allow|Edit|apps/api/.env.example
+block|Write|certs/server.pem
+allow|Edit|src/index.ts

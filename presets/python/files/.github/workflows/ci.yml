@@ -1,0 +1,43 @@
+# Required gates on every pull request and on pushes to main, phase and
+# feature branches. Runs the same init.sh developers and agents run locally.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, "phase/**", "feat/**"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Uncomment when integration tests need Postgres.
+    # services:
+    #   postgres:
+    #     image: postgres:16-alpine
+    #     env: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: postgres }
+    #     ports: ["5432:5432"]
+    #     options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      # The harness scripts need node, whatever the application language.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: pyproject.toml
+      - uses: astral-sh/setup-uv@v6
+        if: hashFiles('uv.lock') != ''
+      - name: Install Poetry
+        if: hashFiles('poetry.lock') != ''
+        run: pipx install poetry
+      - name: Required and integration gates
+        timeout-minutes: 25
+        env:
+          RUN_INTEGRATION: "1"
+        run: bash init.sh

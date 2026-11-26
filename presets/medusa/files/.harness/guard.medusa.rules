@@ -1,0 +1,13 @@
+# Medusa (and Mercur) guard rules. Format: kind|name|regex.
+
+# Destructive database wipe, in every runner form: always blocked.
+block|medusa db:reset|medusa[[:space:]]+db:reset
+# Migrations: approval wherever they sit in the command (npx, bunx, bun x,
+# pnpm exec, bun run, cd x && ...).
+ask|medusa db migration|medusa[[:space:]]+db:(migrate|generate|rollback|sync-links)
+# Mercur blocks pull registry code (new modules) into the repository.
+ask|mercur CLI add|(mercurjs|@mercurjs/cli)(@[^[:space:]]*)?[[:space:]]+add([[:space:]]|$)
+
+# Generated migrations and the central config need a human.
+ask-path|module migrations|^apps/backend/src/modules/[^/]+/migrations/
+ask-path|medusa-config.ts|^apps/backend/medusa-config\.ts$

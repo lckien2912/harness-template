@@ -1,0 +1,34 @@
+# Required gates on every pull request and on pushes to main, phase and
+# feature branches. Runs the same init.sh developers and agents run locally.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, "phase/**", "feat/**"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # or node-version-file: .nvmrc
+      # Keep only the setup step of the package manager the lockfile names.
+      - uses: oven-sh/setup-bun@v2
+        if: hashFiles('bun.lock', 'bun.lockb') != ''
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml') != ''
+      - name: Install ripgrep (scripts/check-architecture.sh)
+        run: sudo apt-get update -q && sudo apt-get install -y -q ripgrep
+      - name: Required and integration gates
+        timeout-minutes: 25
+        env:
+          RUN_INTEGRATION: "1"
+        run: bash init.sh

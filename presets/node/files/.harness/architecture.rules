@@ -1,0 +1,10 @@
+# Architecture boundaries (scripts/check-architecture.sh).
+# Format: <name>|<paths>|<extended regex>|<message>
+# Adjust the paths to the project layout; a missing path is skipped.
+
+# Configuration has one entry point; transport and domain code receive it.
+env outside config|src/routes src/api src/controllers src/domain src/services|process\.env|Read configuration in the config module and inject it.
+# Persistence goes through the data layer, never a hand-built client in handlers.
+raw database client in handlers|src/routes src/api src/controllers|new[[:space:]]+(Pool|Client)[[:space:]]*\(|from[[:space:]]+['"](pg|mysql2|mongodb)['"]|Use the repository/data layer.
+# Debug leftovers.
+debugger statement|src|^[[:space:]]*debugger;?[[:space:]]*$|Remove debugger statements.

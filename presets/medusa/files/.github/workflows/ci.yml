@@ -1,0 +1,57 @@
+# Required gates on every pull request and on pushes to main, phase and
+# feature branches. Runs the same init.sh developers run locally, then its
+# integration gates against a Postgres service.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, "phase/**", "feat/**"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Medusa's integration test runner creates its own databases with these.
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      MEDUSA_DISABLE_TELEMETRY: "true"
+      # Each integration suite boots Medusa and runs every migration; info logs
+      # make a huge CI log. Errors and test failures still print.
+      LOG_LEVEL: error
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Keep only the setup step of the package manager the lockfile names.
+      - uses: oven-sh/setup-bun@v2
+        if: hashFiles('bun.lock') != ''
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml') != ''
+      - name: Install ripgrep (scripts/check-architecture.sh)
+        run: sudo apt-get update -q && sudo apt-get install -y -q ripgrep
+      - name: Required and integration gates
+        timeout-minutes: 35
+        env:
+          RUN_INTEGRATION: "1"
+        run: bash init.sh

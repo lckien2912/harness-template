@@ -1,0 +1,14 @@
+# Python preset guard rules. Format: kind|name|regex.
+
+# Adding a dependency is a Protected Decision.
+ask|dependency add|(^|[;&|[:space:]])(uv[[:space:]]+add|poetry[[:space:]]+add|pdm[[:space:]]+add|uv[[:space:]]+pip[[:space:]]+install|pip3?[[:space:]]+install)[[:space:]]
+# Django: wiping data is blocked; schema changes need approval.
+block|django flush / reset_db|manage\.py[[:space:]]+(flush|reset_db|sqlflush)
+ask|django migrate|manage\.py[[:space:]]+(migrate|makemigrations|squashmigrations)
+# Alembic: downgrading to base wipes the schema.
+block|alembic downgrade base|alembic[[:space:]]+[^;&|]*downgrade[[:space:]]+base
+ask|alembic upgrade / downgrade / revision|alembic[[:space:]]+[^;&|]*(upgrade|downgrade|revision|stamp)
+
+block-path|lockfile|(^|/)(uv\.lock|poetry\.lock|pdm\.lock)$
+ask-path|migrations|(^|/)migrations/[^/]+\.py$|(^|/)alembic/versions/
+ask-path|production settings|(^|/)settings/(prod|production)\.py$

@@ -1,0 +1,7 @@
+# Project-specific guard rules. Never touched by a template upgrade.
+# Format: kind|name|extended regex  (see .claude/hooks/pretooluse-guard.sh)
+# kind = block | ask | block-path | ask-path, optional `:cs` suffix.
+#
+# Examples:
+# ask|deploy script|(^|[;&|[:space:]])\./scripts/deploy\.sh
+# ask-path|infrastructure|^infra/
